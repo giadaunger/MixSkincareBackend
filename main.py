@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from .schemas import ProductSchema
 
 app = FastAPI()
 
