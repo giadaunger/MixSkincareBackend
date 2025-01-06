@@ -25,3 +25,9 @@ def list_products_with_ingredients(db: Session = Depends(get_db)):
   if not products:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
   return products
+
+@app.get("/product/{searchterm}")
+def fetch_product(searchterm, db: Session = Depends(get_db)):
+    result = db.scalars(select(Product).where(Product.product_name.icontains(searchterm))
+        .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))).all()
+    return result
