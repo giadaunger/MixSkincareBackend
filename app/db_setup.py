@@ -12,5 +12,5 @@ def init_db():
   Base.metadata.create_all(bind=engine)
 
 def get_db():
-  with Session(engine) as session:
+  with Session(engine, expire_on_commit=False) as session:
     yield session

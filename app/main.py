@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from app.db_setup import get_db, init_db
 from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import select, update, delete, insert
-from app.database.models import Product
+from app.database.models import Product, ProductIngredient
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -15,6 +15,13 @@ app =  FastAPI(lifespan=lifespan)
 @app.get("/product", status_code=200)
 def list_products(db: Session = Depends(get_db)):
   products = db.scalars(select(Product)).all()
+  if not products:
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+  return products
+
+@app.get("/product/ingredients", status_code=200)
+def list_products_with_ingredients(db: Session = Depends(get_db)):
+  products = db.scalars(select(Product).options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))).all()
   if not products:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
   return products
