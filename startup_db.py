@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from app.db_setup import get_db
-from app.database.models import Product, Ingredient, ProductIngredient
+from app.database.models import Product, Ingredient, ProductIngredient, IncompatibleIngredient, CompatibilityWarning, ActiveIngredient
 from datetime import datetime
 
 db: Session = next(get_db())
@@ -98,6 +98,47 @@ try:
     for product_ingredient_data in product_ingredients_data:
         product_ingredient = ProductIngredient(**product_ingredient_data)
         db.add(product_ingredient)
+
+    db.commit()
+
+    # Skapa inkompatibla ingredienser och förklaringar
+    incompatible_ingredients_data = [
+        {'ingredient1_id': 1, 'ingredient2_id': 3, 'reason': 'Hyaluronic Acid and Vitamin C can cause pH imbalance.'},
+        {'ingredient1_id': 2, 'ingredient2_id': 4, 'reason': 'Niacinamide and Retinol can cause irritation when used together.'},
+        {'ingredient1_id': 3, 'ingredient2_id': 4, 'reason': 'Vitamin C and Retinol should not be used together due to different pH levels.'},
+        {'ingredient1_id': 5, 'ingredient2_id': 7, 'reason': 'Glycerin and Salicylic Acid may cause over-exfoliation.'},
+        {'ingredient1_id': 8, 'ingredient2_id': 9, 'reason': 'Peptides and Squalane have no significant interaction, but can reduce effectiveness.'}
+    ]
+
+    for incompatible_data in incompatible_ingredients_data:
+        incompatible = IncompatibleIngredient(**incompatible_data)
+        db.add(incompatible)
+
+    db.commit()
+
+    # Skapa kompatibilitetsvarningar
+    compatibility_warnings_data = [
+        {'ingredient_id': 1, 'incompatible_with_id': 3, 'warning_message': 'Do not use Hyaluronic Acid and Vitamin C together.'},
+        {'ingredient_id': 2, 'incompatible_with_id': 4, 'warning_message': 'Avoid using Niacinamide and Retinol together to prevent irritation.'},
+        {'ingredient_id': 3, 'incompatible_with_id': 4, 'warning_message': 'Vitamin C and Retinol are best used at different times of the day.'}
+    ]
+
+    for warning_data in compatibility_warnings_data:
+        warning = CompatibilityWarning(**warning_data)
+        db.add(warning)
+
+    db.commit()
+
+    # Skapa aktiva ingredienser med krav på solskydd
+    active_ingredients_data = [
+        {'ingredient_id': 4, 'requires_sunscreen': True, 'additional_info': 'Retinol increases skin sensitivity to sunlight.'},
+        {'ingredient_id': 7, 'requires_sunscreen': True, 'additional_info': 'Salicylic Acid can make the skin more prone to sunburn.'},
+        {'ingredient_id': 3, 'requires_sunscreen': True, 'additional_info': 'Vitamin C enhances protection against UV rays but requires additional sunscreen.'}
+    ]
+
+    for active_data in active_ingredients_data:
+        active_ingredient = ActiveIngredient(**active_data)
+        db.add(active_ingredient)
 
     db.commit()
     
