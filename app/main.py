@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from app.db_setup import get_db, init_db
 from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import select, update, delete, insert, and_, or_
+from sqlalchemy.sql.expression import func
 from app.database.models import Product, ProductIngredient, ActiveIngredient, IncompatibleIngredient, Ingredient
 
 @asynccontextmanager
@@ -30,7 +31,7 @@ app.add_middleware(
 
 @app.get("/product", status_code=200)
 def list_products(limit: int = 5 ,db: Session = Depends(get_db)):
-  products = db.scalars(select(Product).limit(limit)).all()
+  products = db.scalars(select(Product).order_by(func.random()).limit(limit)).all()
   if not products:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
   return products
