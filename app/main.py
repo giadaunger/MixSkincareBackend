@@ -29,8 +29,8 @@ app.add_middleware(
 )
 
 @app.get("/product", status_code=200)
-def list_products(db: Session = Depends(get_db)):
-  products = db.scalars(select(Product)).all()
+def list_products(limit: int = 5 ,db: Session = Depends(get_db)):
+  products = db.scalars(select(Product).limit(limit)).all()
   if not products:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
   return products
