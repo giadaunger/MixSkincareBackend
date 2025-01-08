@@ -36,12 +36,14 @@ def list_products(limit: int = 5 ,db: Session = Depends(get_db)):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
   return products
 
+
 @app.get("/product/ingredients", status_code=200)
 def list_products_with_ingredients(db: Session = Depends(get_db)):
   products = db.scalars(select(Product).options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))).all()
   if not products:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
   return products
+
 
 @app.get("/product/{searchterm}")
 def fetch_product(searchterm, db: Session = Depends(get_db)):
@@ -120,4 +122,73 @@ def analyze_compatibility(
         "incompatibility_warnings": warnings,
         "active_ingredients": active_ingredient_warnings,
         "is_compatible": len(warnings) == 0
+    }
+
+
+@app.get("/product/{product_id}/similar")
+def find_similar_products(
+    product_id: int,
+    limit: int = 5,
+    db: Session = Depends(get_db)
+):
+    # Fetches the original product with its ingredients
+    original_product = db.scalar(
+        select(Product)
+        .where(Product.id == product_id)
+        .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))
+    )
+    
+    if not original_product:
+        raise HTTPException(status_code=404, detail="Produkt hittades inte")
+    
+    # Retrieve all other products with their ingredients
+    all_products = db.scalars(
+        select(Product)
+        .where(Product.id != product_id)
+        .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))
+    ).all()
+    
+    # Create sets of original product ingredients
+    original_ingredients = {pi.ingredient.id for pi in original_product.ingredients}
+    
+    # Calculate similarity for each product
+    product_similarities = []
+    for product in all_products:
+        product_ingredients = {pi.ingredient.id for pi in product.ingredients}
+        
+        # Calculate number of common ingredients
+        common_ingredients = original_ingredients.intersection(product_ingredients)
+        similarity_score = len(common_ingredients)
+        
+        product_similarities.append({
+            "product": product,
+            "similarity_score": similarity_score,
+            "common_ingredients": common_ingredients
+        })
+    
+    # Sort products by similarity (highest first)
+    product_similarities.sort(key=lambda x: x["similarity_score"], reverse=True)
+    
+    # Take the top N most similar products
+    similar_products = []
+    for ps in product_similarities[:limit]:
+        product = ps["product"]
+        similar_products.append({
+            "id": product.id,
+            "name": product.product_name,
+            "description": product.description,
+            "category": product.category,
+            "company_name": product.company_name,
+            "similarity_score": ps["similarity_score"],
+            "total_ingredients": len(product.ingredients),
+            "matching_ingredients": ps["similarity_score"]
+        })
+    
+    return {
+        "original_product": {
+            "id": original_product.id,
+            "name": original_product.product_name,
+            "total_ingredients": len(original_product.ingredients)
+        },
+        "similar_products": similar_products
     }
