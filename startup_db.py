@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from app.db_setup import get_db
-from app.database.models import Product, Ingredient, ProductIngredient, IncompatibleIngredient, CompatibilityWarning, ActiveIngredient
+from app.database.models import Product, Ingredient, ProductIngredient, IncompatibleIngredient, ActiveIngredient
 from datetime import datetime
 
 db: Session = next(get_db())
@@ -9,16 +9,26 @@ db: Session = next(get_db())
 try:
     # Skapa ingredienser
     ingredients_data = [
-        {'ingredient': 'Hyaluronic Acid'},
-        {'ingredient': 'Niacinamide'},
-        {'ingredient': 'Vitamin C'},
-        {'ingredient': 'Retinol'},
+        {'ingredient': 'Water'},
+        {'ingredient': 'Centella Asiatica Extract'},
+        {'ingredient': 'Caprylic/Capric Triglyceride'},
         {'ingredient': 'Glycerin'},
-        {'ingredient': 'Ceramides'},
-        {'ingredient': 'Salicylic Acid'},
-        {'ingredient': 'Peptides'},
         {'ingredient': 'Squalane'},
-        {'ingredient': 'Aloe Vera'}
+        {'ingredient': 'Niacinamide'},
+        {'ingredient': 'Hyaluronic Acid'},
+        {'ingredient': 'Retinal'},
+        {'ingredient': 'Glycolic Acid'},
+        {'ingredient': 'Snail Secretion Filtrate'},
+        {'ingredient': 'Panthenol'},
+        {'ingredient': 'Sodium Hyaluronate'},
+        {'ingredient': 'Butylene Glycol'},
+        {'ingredient': 'Betaine'},
+        {'ingredient': '1, 2-Hexanediol'},
+        {'ingredient': 'Allantoin'},
+        {'ingredient': 'Carbomer'},
+        {'ingredient': 'Ethylhexylglycerin'},
+        {'ingredient': 'Phenoxyethanol'},
+        {'ingredient': 'Ceramide NP'}
     ]
 
     for ingredient_data in ingredients_data:
@@ -27,37 +37,77 @@ try:
 
     db.commit()
 
-    # Skapa produkter
+    # Skapa produkter med kategorier
     products_data = [
         {
-            'product_name': 'Hydrating Serum',
-            'product_img': 'https://example.com/hydrating-serum.jpg',
-            'description': 'A lightweight serum that deeply hydrates and plumps the skin',
+            'product_name': 'Dermide Cica Barrier Sleeping Pack',
+            'product_img': 'product1.png',
+            'description': 'En sovmask som hjälper till att lugna hud som blivit utmattad av skadliga UV-strålar och andra miljöfaktorer över natten.',
+            'category': 'Ansiktsmask',
+            'company_name': 'Purito'
+        },
+        {
+            'product_name': 'Skin Purifier',
+            'product_img': 'product2.png',
+            'description': 'Clinisoothe är en mycket effektiv toner som bidrar till att hålla huden i god balans.',
+            'category': 'Ansiktsvatten',
+            'company_name': 'Clinisoothe'
+        },
+        {
+            'product_name': 'Ageless Day Cream',
+            'product_img': 'product3.png',
+            'description': 'Ageless Day Cream är en återfuktande och skyddande anti-age dagkräm med SPF 15.',
+            'category': 'Dagkräm',
+            'company_name': 'Emma S.'
+        },
+        {
+            'product_name': 'Supple Preparation Unscented Toner',
+            'product_img': 'product4.png',
+            'description': 'Klairs Supple Preparation Unscented Facial Toner är en lätt, fuktgivande toner.',
+            'category': 'Toner',
+            'company_name': 'Klairs'
+        },
+        {
+            'product_name': 'Advanced Snail 92 All in one Cream',
+            'product_img': 'product5.png',
+            'description': 'Ge din hud en magisk glöd med kultfavoriten Advanced Snail 92 All In One Cream!',
+            'category': 'Ansiktskräm',
+            'company_name': 'Cosrx'
+        },
+        {
+            'product_name': 'Watermelon Dew Serum',
+            'product_img': 'product6.png',
+            'description': 'Serumet innehåller hyaluronsyra i tre olika molekylstorlekar.',
+            'category': 'Serum',
+            'company_name': 'Smuuti Skin'
+        },
+        {
+            'product_name': 'Hyaluronic Acid 2% + B5',
+            'product_img': 'product7.png',
+            'description': 'Hyaluronic Acid 2% + B5 ger omedelbar uppfriskande fukt.',
+            'category': 'Serum',
             'company_name': 'The Ordinary'
         },
         {
-            'product_name': 'Moisture Barrier Cream',
-            'product_img': 'https://example.com/barrier-cream.jpg',
-            'description': 'Rich cream that repairs and strengthens skin barrier',
-            'company_name': 'CeraVe'
+            'product_name': 'Revive Eye Serum: Ginseng+Retinal',
+            'product_img': 'product8.png',
+            'description': 'Ett utjämnande ögonserum i krämform som behandlar fina linjer och rynkor.',
+            'category': 'Ögonkräm',
+            'company_name': 'Beauty of Joseon'
         },
         {
-            'product_name': 'Vitamin C Brightening Serum',
-            'product_img': 'https://example.com/vitamin-c-serum.jpg',
-            'description': 'Powerful antioxidant serum that brightens and evens skin tone',
-            'company_name': 'Skinceuticals'
+            'product_name': 'Glycolic Acid 7% Exfoliating Toner',
+            'product_img': 'product9.png',
+            'description': 'En glykolsyra-baserad exfolierande toner som märkbart jämnar ut hudens textur.',
+            'category': 'Serum',
+            'company_name': 'The Ordinary'
         },
         {
-            'product_name': 'Gentle Cleanser',
-            'product_img': 'https://example.com/cleanser.jpg',
-            'description': 'Non-stripping cleanser suitable for all skin types',
-            'company_name': 'La Roche-Posay'
-        },
-        {
-            'product_name': 'BHA Exfoliant',
-            'product_img': 'https://example.com/bha.jpg',
-            'description': 'Chemical exfoliant that unclogs pores and smooths skin texture',
-            'company_name': 'Paula\'s Choice'
+            'product_name': 'Advanced Snail 96 Mucin Power Essence',
+            'product_img': 'product10.png',
+            'description': 'Innehåller hela 96,3% filtrerat snigelsekret för optimal hudvård.',
+            'category': 'Essence',
+            'company_name': 'Cosrx'
         }
     ]
 
@@ -67,32 +117,57 @@ try:
 
     db.commit()
 
+    # Resten av koden är samma som förut...
     # Koppla produkter och ingredienser
     product_ingredients_data = [
-        # Hydrating Serum ingredienser
-        {'product_id': 1, 'ingredient_id': 1},  # Hyaluronic Acid
-        {'product_id': 1, 'ingredient_id': 5},  # Glycerin
-        {'product_id': 1, 'ingredient_id': 9},  # Squalane
+        # Dermide Cica Barrier Sleeping Pack
+        {'product_id': 1, 'ingredient_id': 1},  # Water
+        {'product_id': 1, 'ingredient_id': 2},  # Centella Asiatica Extract
+        {'product_id': 1, 'ingredient_id': 4},  # Glycerin
+        {'product_id': 1, 'ingredient_id': 20}, # Ceramide NP
+
+        # Skin Purifier
+        {'product_id': 2, 'ingredient_id': 1},  # Water
         
-        # Moisture Barrier Cream ingredienser
-        {'product_id': 2, 'ingredient_id': 6},  # Ceramides
-        {'product_id': 2, 'ingredient_id': 5},  # Glycerin
-        {'product_id': 2, 'ingredient_id': 8},  # Peptides
-        
-        # Vitamin C Brightening Serum ingredienser
-        {'product_id': 3, 'ingredient_id': 3},  # Vitamin C
-        {'product_id': 3, 'ingredient_id': 2},  # Niacinamide
-        {'product_id': 3, 'ingredient_id': 1},  # Hyaluronic Acid
-        
-        # Gentle Cleanser ingredienser
-        {'product_id': 4, 'ingredient_id': 5},  # Glycerin
-        {'product_id': 4, 'ingredient_id': 10}, # Aloe Vera
-        {'product_id': 4, 'ingredient_id': 9},  # Squalane
-        
-        # BHA Exfoliant ingredienser
-        {'product_id': 5, 'ingredient_id': 7},  # Salicylic Acid
-        {'product_id': 5, 'ingredient_id': 5},  # Glycerin
-        {'product_id': 5, 'ingredient_id': 10}  # Aloe Vera
+        # Ageless Day Cream
+        {'product_id': 3, 'ingredient_id': 1},  # Water
+        {'product_id': 3, 'ingredient_id': 4},  # Glycerin
+        {'product_id': 3, 'ingredient_id': 5},  # Squalane
+
+        # Supple Preparation Unscented Toner
+        {'product_id': 4, 'ingredient_id': 1},  # Water
+        {'product_id': 4, 'ingredient_id': 13}, # Butylene Glycol
+        {'product_id': 4, 'ingredient_id': 4},  # Glycerin
+
+        # Advanced Snail 92
+        {'product_id': 5, 'ingredient_id': 10}, # Snail Secretion
+        {'product_id': 5, 'ingredient_id': 14}, # Betaine
+        {'product_id': 5, 'ingredient_id': 3},  # Caprylic/Capric Triglyceride
+
+        # Watermelon Dew Serum
+        {'product_id': 6, 'ingredient_id': 1},  # Water
+        {'product_id': 6, 'ingredient_id': 6},  # Niacinamide
+        {'product_id': 6, 'ingredient_id': 7},  # Hyaluronic Acid
+
+        # Hyaluronic Acid 2%
+        {'product_id': 7, 'ingredient_id': 1},  # Water
+        {'product_id': 7, 'ingredient_id': 7},  # Hyaluronic Acid
+        {'product_id': 7, 'ingredient_id': 11}, # Panthenol
+
+        # Revive Eye Serum
+        {'product_id': 8, 'ingredient_id': 1},  # Water
+        {'product_id': 8, 'ingredient_id': 8},  # Retinal
+        {'product_id': 8, 'ingredient_id': 4},  # Glycerin
+
+        # Glycolic Acid 7%
+        {'product_id': 9, 'ingredient_id': 1},  # Water
+        {'product_id': 9, 'ingredient_id': 9},  # Glycolic Acid
+        {'product_id': 9, 'ingredient_id': 4},  # Glycerin
+
+        # Advanced Snail 96
+        {'product_id': 10, 'ingredient_id': 10}, # Snail Secretion
+        {'product_id': 10, 'ingredient_id': 14}, # Betaine
+        {'product_id': 10, 'ingredient_id': 13}  # Butylene Glycol
     ]
 
     for product_ingredient_data in product_ingredients_data:
@@ -101,13 +176,13 @@ try:
 
     db.commit()
 
-    # Skapa inkompatibla ingredienser och förklaringar
+    # Skapa inkompatibla ingredienser
     incompatible_ingredients_data = [
-        {'ingredient1_id': 1, 'ingredient2_id': 3, 'reason': 'Hyaluronic Acid and Vitamin C can cause pH imbalance.'},
-        {'ingredient1_id': 2, 'ingredient2_id': 4, 'reason': 'Niacinamide and Retinol can cause irritation when used together.'},
-        {'ingredient1_id': 3, 'ingredient2_id': 4, 'reason': 'Vitamin C and Retinol should not be used together due to different pH levels.'},
-        {'ingredient1_id': 5, 'ingredient2_id': 7, 'reason': 'Glycerin and Salicylic Acid may cause over-exfoliation.'},
-        {'ingredient1_id': 8, 'ingredient2_id': 9, 'reason': 'Peptides and Squalane have no significant interaction, but can reduce effectiveness.'}
+        {'ingredient1_id': 8, 'ingredient2_id': 9},   # Retinal och Glycolic Acid
+        {'ingredient1_id': 6, 'ingredient2_id': 8},   # Niacinamide och Retinal
+        {'ingredient1_id': 6, 'ingredient2_id': 9},   # Niacinamide och Glycolic Acid
+        {'ingredient1_id': 7, 'ingredient2_id': 9},   # Hyaluronic Acid och Glycolic Acid
+        {'ingredient1_id': 8, 'ingredient2_id': 10}   # Retinal och Snail Secretion
     ]
 
     for incompatible_data in incompatible_ingredients_data:
@@ -116,24 +191,12 @@ try:
 
     db.commit()
 
-    # Skapa kompatibilitetsvarningar
-    compatibility_warnings_data = [
-        {'ingredient_id': 1, 'incompatible_with_id': 3, 'warning_message': 'Do not use Hyaluronic Acid and Vitamin C together.'},
-        {'ingredient_id': 2, 'incompatible_with_id': 4, 'warning_message': 'Avoid using Niacinamide and Retinol together to prevent irritation.'},
-        {'ingredient_id': 3, 'incompatible_with_id': 4, 'warning_message': 'Vitamin C and Retinol are best used at different times of the day.'}
-    ]
-
-    for warning_data in compatibility_warnings_data:
-        warning = CompatibilityWarning(**warning_data)
-        db.add(warning)
-
-    db.commit()
-
-    # Skapa aktiva ingredienser med krav på solskydd
+    # Skapa aktiva ingredienser 
     active_ingredients_data = [
-        {'ingredient_id': 4, 'requires_sunscreen': True, 'additional_info': 'Retinol increases skin sensitivity to sunlight.'},
-        {'ingredient_id': 7, 'requires_sunscreen': True, 'additional_info': 'Salicylic Acid can make the skin more prone to sunburn.'},
-        {'ingredient_id': 3, 'requires_sunscreen': True, 'additional_info': 'Vitamin C enhances protection against UV rays but requires additional sunscreen.'}
+        {'ingredient_id': 8},  # Retinal
+        {'ingredient_id': 9},  # Glycolic Acid
+        {'ingredient_id': 6},  # Niacinamide
+        {'ingredient_id': 7}   # Hyaluronic Acid
     ]
 
     for active_data in active_ingredients_data:
