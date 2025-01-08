@@ -99,7 +99,6 @@ def analyze_compatibility(
            (ingredient2 in product1_ingredients and ingredient1 in product2_ingredients):
             warnings.append({
                 "type": "incompatibility",
-                "message": incomp.reason,
                 "ingredients": [ingredient1.ingredient, ingredient2.ingredient]
             })
     
@@ -111,8 +110,6 @@ def analyze_compatibility(
         if active:
             active_ingredient_warnings.append({
                 "ingredient": ingredient.ingredient,
-                "requires_sunscreen": active.requires_sunscreen,
-                "additional_info": active.additional_info
             })
     
     return {

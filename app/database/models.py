@@ -71,4 +71,4 @@ class ActiveIngredient(Base):
     ingredient: Mapped["Ingredient"] = relationship(back_populates="active_ingredient")
 
     def __repr__(self):
-        return f"<ActiveIngredient requires_sunscreen={self.requires_sunscreen}>"
+        return f"<ActiveIngredient requires_sunscreen={self.ingredient_id}>"
