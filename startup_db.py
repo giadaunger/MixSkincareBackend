@@ -41,70 +41,70 @@ try:
     products_data = [
         {
             'product_name': 'Dermide Cica Barrier Sleeping Pack',
-            'product_img': 'product1.png',
+            'product_img': '/product_img_dummy_data/product1.png',
             'description': 'En sovmask som hjälper till att lugna hud som blivit utmattad av skadliga UV-strålar och andra miljöfaktorer över natten.',
             'category': 'Ansiktsmask',
             'company_name': 'Purito'
         },
         {
             'product_name': 'Skin Purifier',
-            'product_img': 'product2.png',
+            'product_img': '/product_img_dummy_data/product2.png',
             'description': 'Clinisoothe är en mycket effektiv toner som bidrar till att hålla huden i god balans.',
             'category': 'Ansiktsvatten',
             'company_name': 'Clinisoothe'
         },
         {
             'product_name': 'Ageless Day Cream',
-            'product_img': 'product3.png',
+            'product_img': '/product_img_dummy_data/product3.png',
             'description': 'Ageless Day Cream är en återfuktande och skyddande anti-age dagkräm med SPF 15.',
             'category': 'Dagkräm',
             'company_name': 'Emma S.'
         },
         {
             'product_name': 'Supple Preparation Unscented Toner',
-            'product_img': 'product4.png',
+            'product_img': '/product_img_dummy_data/product4.png',
             'description': 'Klairs Supple Preparation Unscented Facial Toner är en lätt, fuktgivande toner.',
             'category': 'Toner',
             'company_name': 'Klairs'
         },
         {
             'product_name': 'Advanced Snail 92 All in one Cream',
-            'product_img': 'product5.png',
+            'product_img': '/product_img_dummy_data/product5.png',
             'description': 'Ge din hud en magisk glöd med kultfavoriten Advanced Snail 92 All In One Cream!',
             'category': 'Ansiktskräm',
             'company_name': 'Cosrx'
         },
         {
             'product_name': 'Watermelon Dew Serum',
-            'product_img': 'product6.png',
+            'product_img': '/product_img_dummy_data/product6.png',
             'description': 'Serumet innehåller hyaluronsyra i tre olika molekylstorlekar.',
             'category': 'Serum',
             'company_name': 'Smuuti Skin'
         },
         {
             'product_name': 'Hyaluronic Acid 2% + B5',
-            'product_img': 'product7.png',
+            'product_img': '/product_img_dummy_data/product7.png',
             'description': 'Hyaluronic Acid 2% + B5 ger omedelbar uppfriskande fukt.',
             'category': 'Serum',
             'company_name': 'The Ordinary'
         },
         {
             'product_name': 'Revive Eye Serum: Ginseng+Retinal',
-            'product_img': 'product8.png',
+            'product_img': '/product_img_dummy_data/product8.png',
             'description': 'Ett utjämnande ögonserum i krämform som behandlar fina linjer och rynkor.',
             'category': 'Ögonkräm',
             'company_name': 'Beauty of Joseon'
         },
         {
             'product_name': 'Glycolic Acid 7% Exfoliating Toner',
-            'product_img': 'product9.png',
+            'product_img': '/product_img_dummy_data/product9.png',
             'description': 'En glykolsyra-baserad exfolierande toner som märkbart jämnar ut hudens textur.',
             'category': 'Serum',
             'company_name': 'The Ordinary'
         },
         {
             'product_name': 'Advanced Snail 96 Mucin Power Essence',
-            'product_img': 'product10.png',
+            'product_img': '/product_img_dummy_data/product10.png',
             'description': 'Innehåller hela 96,3% filtrerat snigelsekret för optimal hudvård.',
             'category': 'Essence',
             'company_name': 'Cosrx'
