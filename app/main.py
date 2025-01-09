@@ -207,6 +207,7 @@ def find_similar_products(
         similar_products.append({
             "id": product.id,
             "name": product.product_name,
+            "product_img": product.product_img, 
             "description": product.description,
             "category": product.category,
             "company_name": product.company_name,
@@ -221,6 +222,7 @@ def find_similar_products(
         "original_product": {
             "id": original_product.id,
             "name": original_product.product_name,
+             "product_img": original_product.product_img,
             "category": original_product.category,
             "total_ingredients": len(original_product.ingredients)
         },
