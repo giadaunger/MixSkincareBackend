@@ -141,29 +141,60 @@ def find_similar_products(
     if not original_product:
         raise HTTPException(status_code=404, detail="Produkt hittades inte")
     
-    # Retrieve all other products with their ingredients
+    # Retrieve all other products with their ingredients, filtered by same category
     all_products = db.scalars(
         select(Product)
-        .where(Product.id != product_id)
+        .where(
+            and_(
+                Product.id != product_id,
+                Product.category == original_product.category
+            )
+        )
         .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))
     ).all()
     
-    # Create sets of original product ingredients
-    original_ingredients = {pi.ingredient.id for pi in original_product.ingredients}
+    # Create sets of original product ingredients with full ingredient info
+    original_ingredients = {
+        pi.ingredient.id: pi.ingredient.ingredient 
+        for pi in original_product.ingredients
+    }
     
     # Calculate similarity for each product
     product_similarities = []
     for product in all_products:
-        product_ingredients = {pi.ingredient.id for pi in product.ingredients}
+        # Create set of current product ingredients with full ingredient info
+        product_ingredients = {
+            pi.ingredient.id: pi.ingredient.ingredient 
+            for pi in product.ingredients
+        }
         
-        # Calculate number of common ingredients
-        common_ingredients = original_ingredients.intersection(product_ingredients)
-        similarity_score = len(common_ingredients)
+        # Find matching and non-matching ingredients
+        matching_ingredient_ids = set(original_ingredients.keys()) & set(product_ingredients.keys())
+        original_only_ids = set(original_ingredients.keys()) - set(product_ingredients.keys())
+        product_only_ids = set(product_ingredients.keys()) - set(original_ingredients.keys())
+        
+        # Create detailed ingredient lists
+        matching_ingredients = [
+            {"id": ing_id, "name": original_ingredients[ing_id]}
+            for ing_id in matching_ingredient_ids
+        ]
+        
+        original_only_ingredients = [
+            {"id": ing_id, "name": original_ingredients[ing_id]}
+            for ing_id in original_only_ids
+        ]
+        
+        product_only_ingredients = [
+            {"id": ing_id, "name": product_ingredients[ing_id]}
+            for ing_id in product_only_ids
+        ]
         
         product_similarities.append({
             "product": product,
-            "similarity_score": similarity_score,
-            "common_ingredients": common_ingredients
+            "similarity_score": len(matching_ingredients),
+            "matching_ingredients": matching_ingredients,
+            "original_only_ingredients": original_only_ingredients,
+            "product_only_ingredients": product_only_ingredients
         })
     
     # Sort products by similarity (highest first)
@@ -181,13 +212,16 @@ def find_similar_products(
             "company_name": product.company_name,
             "similarity_score": ps["similarity_score"],
             "total_ingredients": len(product.ingredients),
-            "matching_ingredients": ps["similarity_score"]
+            "matching_ingredients": ps["matching_ingredients"],
+            "original_only_ingredients": ps["original_only_ingredients"],
+            "product_only_ingredients": ps["product_only_ingredients"]
         })
     
     return {
         "original_product": {
             "id": original_product.id,
             "name": original_product.product_name,
+            "category": original_product.category,
             "total_ingredients": len(original_product.ingredients)
         },
         "similar_products": similar_products
