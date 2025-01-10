@@ -44,9 +44,17 @@ def list_products_with_ingredients(limit: int = 5, db: Session = Depends(get_db)
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
   return products
 
+@app.get("/product/id/{product_id}")
+def fetch_product_with_id(product_id: int, db: Session = Depends(get_db)):
+    result = db.scalar(select(Product).where(Product.id == product_id)
+        .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient)))
+    if not result:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return result
+
 
 @app.get("/product/{searchterm}")
-def fetch_product(searchterm, db: Session = Depends(get_db)):
+def fetch_product(searchterm: str, db: Session = Depends(get_db)):
     result = db.scalars(select(Product).where(Product.product_name.icontains(searchterm))
         .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))).all()
     return result
