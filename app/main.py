@@ -38,8 +38,8 @@ def list_products(limit: int = 5 ,db: Session = Depends(get_db)):
 
 
 @app.get("/product/ingredients", status_code=200)
-def list_products_with_ingredients(db: Session = Depends(get_db)):
-  products = db.scalars(select(Product).options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))).all()
+def list_products_with_ingredients(limit: int = 5, db: Session = Depends(get_db)):
+  products = db.scalars(select(Product).options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient)).limit(limit)).all()
   if not products:
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
   return products
