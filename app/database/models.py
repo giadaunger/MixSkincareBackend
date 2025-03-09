@@ -22,7 +22,6 @@ class Ingredient(Base):
     
     # Relationships
     products: Mapped[list["ProductIngredient"]] = relationship(back_populates="ingredient")
-    categories: Mapped[list["CategoryIngredient"]] = relationship(back_populates="ingredient")
     active_ingredient: Mapped["ActiveIngredient"] = relationship(back_populates="ingredient", uselist=False)
 
     def __repr__(self):
@@ -37,6 +36,7 @@ class Product(Base):
     description: Mapped[str] = mapped_column(String(1000))
     category: Mapped[str] = mapped_column(String(255))
     company_name: Mapped[str] = mapped_column(String(100))
+    price: Mapped[int] = mapped_column(Integer)
     
     # Relationships
     ingredients: Mapped[list["ProductIngredient"]] = relationship(back_populates="product")
@@ -53,14 +53,6 @@ class IncompatibleIngredient(Base):
     # Relationships
     ingredient1: Mapped["Ingredient"] = relationship(foreign_keys=[ingredient1_id])
     ingredient2: Mapped["Ingredient"] = relationship(foreign_keys=[ingredient2_id])
-
-
-class CategoryIngredient(Base):
-    __tablename__ = "category_ingredients"
-    ingredient_id: Mapped[int] = mapped_column(ForeignKey("ingredients.id"), primary_key=True)
-
-    # Relationships
-    ingredient: Mapped["Ingredient"] = relationship(back_populates="categories")
 
 
 class ActiveIngredient(Base):
