@@ -404,7 +404,7 @@ try:
             'product_img': '/product_img_dummy_data/product41.png',
             'description': 'En upplyftande essence med lakritsrot-extrakt som reducerar mörka fläckar och ojämn hudton.',
             'category': 'Essence',
-            'company_name': 'Missha',
+            'company_name': 'Laneige',
             'price': 24900
         },
         {
