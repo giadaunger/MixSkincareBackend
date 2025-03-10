@@ -206,9 +206,6 @@ def find_similar_products(
             "product_only_ingredients": product_only_ingredients
         })
     
-    # Sort products by similarity (highest first)
-    product_similarities.sort(key=lambda x: x["similarity_score"], reverse=True)
-    
     # Take the top N most similar products
     similar_products = []
     for ps in product_similarities[:limit]:
