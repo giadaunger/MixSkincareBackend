@@ -5,7 +5,7 @@ from app.db_setup import get_db, init_db
 from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import select, update, delete, insert, and_, or_
 from sqlalchemy.sql.expression import func
-from app.database.models import Product, ProductIngredient, ActiveIngredient, IncompatibleIngredient, Ingredient
+from app.database.models import Product, ProductIngredient, ActiveIngredient, IncompatibleIngredient, Ingredient, ProductStat
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -234,3 +234,25 @@ def find_similar_products(
         },
         "similar_products": similar_products
     }
+
+
+@app.post("/track/product-view/{product_id}")
+def track_product_view(product_id: int, db: Session = Depends(get_db)):
+    # Get or create product statistics
+    stats = db.scalar(select(ProductStat).where(ProductStat.product_id == product_id))
+    
+    if not stats:
+        # Check if the product exists
+        product = db.scalar(select(Product).where(Product.id == product_id))
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Create statistics if they do not exist
+        stats = ProductStat(product_id=product_id, view_count=1)
+        db.add(stats)
+    else:
+        # Increase the counter
+        stats.view_count += 1
+    
+    db.commit()
+    return {"status": "success"}
