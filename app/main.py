@@ -256,3 +256,35 @@ def track_product_view(product_id: int, db: Session = Depends(get_db)):
     
     db.commit()
     return {"status": "success"}
+
+
+@app.get("/popular-products")
+def get_popular_products(limit: int = 25, random_limit: int = 10, db: Session = Depends(get_db)):
+    # First get popular products based on view count
+    popular_products = db.scalars(
+        select(Product)
+        .join(ProductStat)
+        .order_by(ProductStat.view_count.desc())
+        .limit(limit)
+        .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))
+    ).all()
+    
+    # Get the IDs of popular products to exclude them from random selection
+    popular_product_ids = [p.id for p in popular_products]
+    
+    # Then get additional random products that are not in the popular list
+    if random_limit > 0:
+        random_products = db.scalars(
+            select(Product)
+            .where(Product.id.not_in(popular_product_ids) if popular_product_ids else True)
+            .order_by(func.random())
+            .limit(random_limit)
+            .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))
+        ).all()
+        
+        # Combine both lists into one
+        combined_products = list(popular_products) + list(random_products)
+    else:
+        combined_products = popular_products
+    
+    return combined_products

@@ -73,8 +73,9 @@ class ProductStat(Base):
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), primary_key=True)
     view_count: Mapped[int] = mapped_column(Integer, default=0)
     
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(datetime.timezone.utc), onupdate=lambda: datetime.now(datetime.timezone.utc))
-    reset_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(datetime.timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    reset_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+
     
     # Relationship
     product: Mapped["Product"] = relationship(back_populates="stats")
