@@ -1,5 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, ForeignKey, UniqueConstraint
+from sqlalchemy import Integer, String, ForeignKey, DateTime
+from datetime import datetime, timezone
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -40,6 +41,7 @@ class Product(Base):
     
     # Relationships
     ingredients: Mapped[list["ProductIngredient"]] = relationship(back_populates="product")
+    stats: Mapped["ProductStat"] = relationship(back_populates="product", uselist=False)
 
     def __repr__(self):
         return f"<Product={self.product_name}>"
@@ -64,3 +66,15 @@ class ActiveIngredient(Base):
 
     def __repr__(self):
         return f"<ActiveIngredient requires_sunscreen={self.ingredient_id}>"
+
+
+class ProductStat(Base):
+    __tablename__ = "product_stats"
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), primary_key=True)
+    view_count: Mapped[int] = mapped_column(Integer, default=0)
+    
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(datetime.timezone.utc), onupdate=lambda: datetime.now(datetime.timezone.utc))
+    reset_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(datetime.timezone.utc))
+    
+    # Relationship
+    product: Mapped["Product"] = relationship(back_populates="stats")
