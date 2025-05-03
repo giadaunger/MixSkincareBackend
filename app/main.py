@@ -258,33 +258,89 @@ def track_product_view(product_id: int, db: Session = Depends(get_db)):
     return {"status": "success"}
 
 
-@app.get("/popular-products")
-def get_popular_products(limit: int = 25, random_limit: int = 10, db: Session = Depends(get_db)):
-    # First get popular products based on view count
+@app.get("/front-page-products")
+def get_front_page_products(limit: int = 15, db: Session = Depends(get_db)):
+        # First get popular products based on view count
     popular_products = db.scalars(
         select(Product)
         .join(ProductStat)
         .order_by(ProductStat.view_count.desc())
-        .limit(limit)
         .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))
     ).all()
     
-    # Get the IDs of popular products to exclude them from random selection
-    popular_product_ids = [p.id for p in popular_products]
-    
-    # Then get additional random products that are not in the popular list
-    if random_limit > 0:
-        random_products = db.scalars(
+    # Check if we need to add random products
+    if len(popular_products) < limit:
+        # Calculate how many random products we need
+        random_limit = limit - len(popular_products)
+        
+        # Get the IDs of popular products to exclude them from random selection
+        popular_product_ids = [p.id for p in popular_products]
+        
+        # Get additional products that are not in the popular list
+        # But order by ID to maintain consistent ordering instead of random()
+        additional_products = db.scalars(
             select(Product)
             .where(Product.id.not_in(popular_product_ids) if popular_product_ids else True)
-            .order_by(func.random())
+            .order_by(Product.id)  # Order by ID for consistency
             .limit(random_limit)
             .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))
         ).all()
         
         # Combine both lists into one
-        combined_products = list(popular_products) + list(random_products)
+        combined_products = list(popular_products) + list(additional_products)
     else:
-        combined_products = popular_products
+        # If we have enough or more popular products, just take the top ones
+        combined_products = popular_products[:limit]
     
     return combined_products
+
+
+@app.get("/popular-products")
+def get_popular_products(offset: int = 0, limit: int = 30, db: Session = Depends(get_db)):
+    # First get all popular products based on view count
+    all_popular_products = db.scalars(
+        select(Product)
+        .join(ProductStat)
+        .order_by(ProductStat.view_count.desc())
+        .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))
+    ).all()
+    
+    # Calculate total number of products in database for pagination
+    total_product_count = db.scalar(select(func.count()).select_from(Product))
+    
+    # Get products for this batch based on offset
+    current_batch = []
+    
+    # First try to get products from the popular list based on offset
+    popular_offset_end = min(offset + limit, len(all_popular_products))
+    popular_offset_start = min(offset, len(all_popular_products))
+    popular_batch = all_popular_products[popular_offset_start:popular_offset_end]
+    current_batch.extend(popular_batch)
+    
+    # If we need more products to reach the limit, get additional ones
+    if len(current_batch) < limit:
+        additional_needed = limit - len(current_batch)
+        popular_ids = [p.id for p in all_popular_products]
+        
+        # Calculate offset for additional products
+        additional_offset = max(0, offset - len(all_popular_products))
+        
+        # Get additional products
+        additional_products = db.scalars(
+            select(Product)
+            .where(Product.id.not_in(popular_ids) if popular_ids else True)
+            .order_by(Product.id)  # Consistent ordering
+            .offset(additional_offset)
+            .limit(additional_needed)
+            .options(selectinload(Product.ingredients).selectinload(ProductIngredient.ingredient))
+        ).all()
+        
+        current_batch.extend(additional_products)
+    
+    # Check if there are more products to load
+    has_more = (offset + limit) < total_product_count
+    
+    return {
+        "products": current_batch,
+        "has_more": has_more
+    }
