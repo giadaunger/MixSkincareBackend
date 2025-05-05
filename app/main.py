@@ -5,7 +5,7 @@ from app.db_setup import get_db, init_db
 from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import select, update, delete, insert, and_, or_
 from sqlalchemy.sql.expression import func
-from app.database.models import Product, ProductIngredient, ActiveIngredient, IncompatibleIngredient, Ingredient, ProductStat
+from app.database.models import Product, ProductIngredient, ActiveIngredient, IncompatibleIngredient, Ingredient, ProductStat, BlogStat
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -344,3 +344,31 @@ def get_popular_products(offset: int = 0, limit: int = 30, db: Session = Depends
         "products": current_batch,
         "has_more": has_more
     }
+
+
+@app.post("/track/blog-view/{blog_path}")
+def track_blog_view(blog_path: str, db: Session = Depends(get_db)):
+    # Get or create blog statistics
+    stats = db.scalar(select(BlogStat).where(BlogStat.blog_path == blog_path))
+    
+    if not stats:
+        # Create statistics if they do not exist
+        stats = BlogStat(blog_path=blog_path, view_count=1)
+        db.add(stats)
+    else:
+        # Increase the counter
+        stats.view_count += 1
+    
+    db.commit()
+    return {"status": "success"}
+
+
+@app.get("/popular-blogs")
+def get_popular_blogs(db: Session = Depends(get_db)):
+    # Get blogs sorted by view count
+    popular_blogs = db.scalars(
+        select(BlogStat)
+        .order_by(BlogStat.view_count.desc())
+    ).all()
+    
+    return popular_blogs

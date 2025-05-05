@@ -72,10 +72,18 @@ class ProductStat(Base):
     __tablename__ = "product_stats"
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"), primary_key=True)
     view_count: Mapped[int] = mapped_column(Integer, default=0)
-    
+
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     reset_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     
     # Relationship
     product: Mapped["Product"] = relationship(back_populates="stats")
+
+
+class BlogStat(Base):
+    __tablename__ = "blog_stats"
+    blog_path: Mapped[str] = mapped_column(String(255), primary_key=True)
+    view_count: Mapped[int] = mapped_column(Integer, default=0)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    reset_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
