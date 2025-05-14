@@ -20,7 +20,7 @@ origin = [
     "http://localhost:5173",
     "http://localhost:5174",
     "https://mixskincare.netlify.app",
-    "http://mixskincare.beauty"
+    "https://mixskincare.beauty"
 ]
 
 app.add_middleware(
