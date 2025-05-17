@@ -1,2 +1,5 @@
 venv
 .env
+dummyData.txt
+import_products.py
+create_dataset.py

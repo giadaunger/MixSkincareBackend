@@ -19,7 +19,7 @@ class ProductIngredient(Base):
 class Ingredient(Base):
     __tablename__ = "ingredients"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    ingredient: Mapped[str] = mapped_column(String(100), unique=True)
+    ingredient: Mapped[str] = mapped_column(String(1000), unique=True)
     
     # Relationships
     products: Mapped[list["ProductIngredient"]] = relationship(back_populates="ingredient")
@@ -32,11 +32,11 @@ class Ingredient(Base):
 class Product(Base):
     __tablename__ = "products"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    product_name: Mapped[str] = mapped_column(String(100), unique=True)
+    product_name: Mapped[str] = mapped_column(String(1000), unique=True)
     product_img: Mapped[str] = mapped_column(String(255))
-    description: Mapped[str] = mapped_column(String(1000))
-    category: Mapped[str] = mapped_column(String(255))
-    company_name: Mapped[str] = mapped_column(String(100))
+    description: Mapped[str] = mapped_column(String(5000))
+    category: Mapped[str] = mapped_column(String(500))
+    company_name: Mapped[str] = mapped_column(String(1000))
     price: Mapped[int] = mapped_column(Integer)
     
     # Relationships
