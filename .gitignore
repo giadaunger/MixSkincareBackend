@@ -3,3 +3,6 @@ venv
 dummyData.txt
 import_products.py
 create_dataset.py
+product_compatibility_dataset.csv
+check_balance.py
+data_set
