@@ -7,20 +7,17 @@ class ProductCompatibilityModel:
     
     @staticmethod
     def get_instance():
-        """Singleton-mönster för att bara ladda modellen en gång"""
         if ProductCompatibilityModel._instance is None:
             ProductCompatibilityModel._instance = ProductCompatibilityModel()
         return ProductCompatibilityModel._instance
     
     def __init__(self):
-        # Lazy loading - modellen laddas först när den behövs
         self.tokenizer = None
         self.model = None
         self.initialized = False
     
     def _initialize(self):
         token = os.getenv("HUGGINGFACE_TOKEN") 
-        """Laddar tokenizer och modell vid första användning"""
         if not self.initialized:
             print("Initializing ML model for product compatibility...")
             try:
@@ -29,12 +26,11 @@ class ProductCompatibilityModel:
                     "gigiU/product-compatibility-classifier",
                     use_auth_token=token
                 )
-                self.model.eval()  # Sätt modellen i utvärderingsläge
+                self.model.eval()  
                 self.initialized = True
                 print("ML model initialized successfully!")
             except Exception as e:
                 print(f"Error initializing ML model: {e}")
-                # Om något går fel, försök med default-modellen
                 try:
                     self.tokenizer = AutoTokenizer.from_pretrained("distilbert-base-multilingual-cased")
                     self.model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-multilingual-cased", num_labels=2)
@@ -45,29 +41,22 @@ class ProductCompatibilityModel:
                     raise
     
     def predict_compatibility(self, product1_name, product2_name):
-        """Förutsäger kompatibilitet mellan två produkter"""
-        # Initiera modellen om det behövs
         self._initialize()
         
-        # Skapa input text
         input_text = f"Produkt 1: {product1_name} Produkt 2: {product2_name}"
         
-        # Tokenisera texten
         inputs = self.tokenizer(input_text, return_tensors="pt", padding=True, truncation=True)
         
-        # Gör förutsägelsen
         with torch.no_grad():
             outputs = self.model(**inputs)
             predictions = outputs.logits
             
-        # Omvandla till sannolikheter
         probabilities = torch.nn.functional.softmax(predictions, dim=-1)
         
-        # Hämta resultat (0 = inkompatibel, 1 = kompatibel)
-        compatibility_score = probabilities[0][1].item()  # Sannolikhet för kompatibilitet
+        compatibility_score = probabilities[0][1].item()  
         is_compatible = compatibility_score > 0.5
         
         return {
             "is_compatible": bool(is_compatible),
-            "compatibility_score": round(compatibility_score * 100, 2)  # Procent
+            "compatibility_score": round(compatibility_score * 100, 2)  
         }

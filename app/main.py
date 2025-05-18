@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.db_setup import get_db, init_db
+from app.model import ProductCompatibilityModel
 from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import select, update, delete, insert, and_, or_
 from sqlalchemy.sql.expression import func
@@ -11,6 +12,7 @@ from app.model import ProductCompatibilityModel
 @asynccontextmanager
 async def lifespan(app: FastAPI):
   init_db()
+  ProductCompatibilityModel.get_instance()
   yield
 
 app =  FastAPI(lifespan=lifespan)
@@ -382,23 +384,23 @@ def ml_predict_compatibility(
     product2_id: int, 
     db: Session = Depends(get_db)
 ):
-    # Hämta produkterna
+    # Get products
     product1 = db.scalar(select(Product).where(Product.id == product1_id))
     product2 = db.scalar(select(Product).where(Product.id == product2_id))
     
     if not product1 or not product2:
         raise HTTPException(status_code=404, detail="En eller båda produkterna hittades inte")
     
-    # Använd ML-modellen för prediktion
+    # Use model for prediction
     model = ProductCompatibilityModel.get_instance()
     prediction = model.predict_compatibility(product1.product_name, product2.product_name)
     
-    # Returnera bara prediktionen
+    # Return prediction
     return {
         "products": {
             "product1": product1.product_name,
             "product2": product2.product_name
         },
         "is_compatible": prediction["is_compatible"],
-        "confidence": prediction["compatibility_score"]  # Confidence score är ML-modellens säkerhet (0-100%)
+        "confidence": prediction["compatibility_score"]  
     }
