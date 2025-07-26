@@ -387,6 +387,7 @@ def ml_predict_compatibility(
     # Get products
     product1 = db.scalar(select(Product).where(Product.id == product1_id))
     product2 = db.scalar(select(Product).where(Product.id == product2_id))
+    print(product1, product2)
     
     if not product1 or not product2:
         raise HTTPException(status_code=404, detail="En eller båda produkterna hittades inte")

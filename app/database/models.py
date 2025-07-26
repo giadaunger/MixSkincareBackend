@@ -37,14 +37,45 @@ class Product(Base):
     description: Mapped[str] = mapped_column(String(5000))
     category: Mapped[str] = mapped_column(String(500))
     company_name: Mapped[str] = mapped_column(String(1000))
-    price: Mapped[int] = mapped_column(Integer)
     
     # Relationships
     ingredients: Mapped[list["ProductIngredient"]] = relationship(back_populates="product")
     stats: Mapped["ProductStat"] = relationship(back_populates="product", uselist=False)
+    variants: Mapped[list["ProductVariant"]] = relationship(back_populates="product", cascade="all, delete-orphan")
+    urls: Mapped[list["ProductURL"]] = relationship(back_populates="product", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Product={self.product_name}>"
+    
+
+class ProductVariant(Base):
+    __tablename__ = "product_variants"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    size_ml: Mapped[int] = mapped_column(Integer)  
+    price: Mapped[int] = mapped_column(Integer)    
+    is_available: Mapped[bool] = mapped_column(default=True)  
+    
+    # Relationships
+    product: Mapped["Product"] = relationship(back_populates="variants")
+
+    def __repr__(self):
+        return f"<ProductVariant product_id={self.product_id} size={self.size_ml}ml price={self.price}>"
+
+
+class ProductURL(Base):
+    __tablename__ = "product_urls"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    url: Mapped[str] = mapped_column(String(2000))
+    store_name: Mapped[str] = mapped_column(String(200))  
+    is_active: Mapped[bool] = mapped_column(default=True)  
+    
+    # Relationships
+    product: Mapped["Product"] = relationship(back_populates="urls")
+
+    def __repr__(self):
+        return f"<ProductURL product_id={self.product_id} store={self.store_name} type={self.url_type}>"
 
 
 class IncompatibleIngredient(Base):
